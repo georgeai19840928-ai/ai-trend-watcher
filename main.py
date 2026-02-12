@@ -19,9 +19,6 @@ def send_alert(error_msg):
     發送緊急錯誤通知給管理員
     """
     try:
-        from src.notifier import send_telegram_summary
-        # 借用 notifier 的發送功能，雖然有點 dirty 但能 work
-        # 這裡直接用 requests 發送簡訊
         import requests
         bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
@@ -67,7 +64,7 @@ def main():
     """主程式入口"""
     try:
         # 讀取排程時間 (預設 05:00)
-        schedule_time = os.getenv("SCHEDULE_TIME", "05:00")
+        schedule_time = os.getenv("SCHEDULE_TIME", "21:00") # UTC 21:00 = 台灣 05:00
         
         logging.info("程式啟動中...")
         
@@ -78,7 +75,7 @@ def main():
         # 設定排程
         schedule.every().day.at(schedule_time).do(daily_job)
         
-        logging.info(f"AI Trend Watcher 已啟動，設定每日於 {schedule_time} 執行任務。")
+        logging.info(f"AI Trend Watcher 已啟動，設定每日於 {schedule_time} (UTC) 執行任務。")
         
         # 啟動排程迴圈
         while True:
@@ -89,7 +86,7 @@ def main():
         error_msg = f"主程式崩潰 (Main Loop Crash): {str(e)}\n{traceback.format_exc()}"
         logging.critical(error_msg)
         send_alert(error_msg)
-        raise e  # 讓 Zeabur 知道程式掛了，以便重啟
+        raise e
 
 if __name__ == "__main__":
     main()
