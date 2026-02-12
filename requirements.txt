@@ -1,0 +1,8 @@
+# Requirements
+requests
+schedule
+openai
+google-generativeai
+python-dotenv
+python-telegram-bot
+pytz
