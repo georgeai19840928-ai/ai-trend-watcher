@@ -1,0 +1,25 @@
+name: Deploy to Zeabur
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy to Zeabur
+        uses: zeabur/action-deploy@v1
+        with:
+          app_id: ${{ secrets.ZEABUR_APP_ID }}
+          service_id: ${{ secrets.ZEABUR_SERVICE_ID }}
+          environment_name: production
+        env:
+          ZEABUR_API_TOKEN: ${{ secrets.ZEABUR_TOKEN }}
