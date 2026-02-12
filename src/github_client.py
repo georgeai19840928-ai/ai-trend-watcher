@@ -23,7 +23,7 @@ def search_trending_repos(limit=10):
 
     # 設定搜尋條件：最近 7 天建立或更新的 AI 相關專案
     date_str = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-    query = f"topic:ai OR topic:llm OR topic:generative-video OR topic:comfyui OR topic:stable-video-diffusion created:>{date_str}"
+    query = f"(topic:ai OR topic:llm OR topic:generative-video OR topic:comfyui OR topic:stable-video-diffusion) created:>{date_str}"
     
     params = {
         "q": query,
