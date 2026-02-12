@@ -21,9 +21,12 @@ def search_trending_repos(limit=10):
         "Accept": "application/vnd.github.v3+json"
     }
 
-    # 設定搜尋條件：最近 7 天建立或更新的 AI 相關專案
+    # 設定搜尋條件：最近 7 天建立
     date_str = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-    query = f"(topic:ai OR topic:llm OR topic:generative-video OR topic:comfyui OR topic:stable-video-diffusion) created:>{date_str}"
+    
+    # 使用關鍵字搜尋以涵蓋更多專案 (不只限制在 topic)
+    # 搜尋 AI, LLM, Video Workflow 相關關鍵字
+    query = f"AI LLM video workflow created:>{date_str}"
     
     params = {
         "q": query,
@@ -33,12 +36,30 @@ def search_trending_repos(limit=10):
     }
 
     try:
-        response = requests.get("https://api.github.com/search/repositories", headers=headers, params=params)
+        response = requests.get("https://api.github.com/search/repositories", headers=headers, params=params, timeout=15)
+        
+        # 處理 422 錯誤 (通常是查詢語法問題)
+        if response.status_code == 422:
+            logger.error(f"GitHub API 422 錯誤。Query: {query}")
+            # 備用方案：更簡單的查詢
+            query = f"AI LLM created:>{date_str}"
+            params["q"] = query
+            response = requests.get("https://api.github.com/search/repositories", headers=headers, params=params, timeout=15)
+
         response.raise_for_status()
         
         data = response.json()
         repos = data.get("items", [])
         
+        # 如果還是 0 個，嘗試不限建立時間 (僅限最近更新)
+        if not repos:
+            logger.info("7 天內無新專案，擴大搜尋範圍至最近更新的專案...")
+            query = f"AI LLM video workflow pushed:>{date_str}"
+            params["q"] = query
+            response = requests.get("https://api.github.com/search/repositories", headers=headers, params=params, timeout=15)
+            data = response.json()
+            repos = data.get("items", [])
+
         logger.info(f"成功搜尋到 {len(repos)} 個熱門專案。")
         return repos
         
