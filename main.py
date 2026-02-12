@@ -44,6 +44,11 @@ def main():
     # 讀取排程時間 (預設 05:00)
     schedule_time = os.getenv("SCHEDULE_TIME", "05:00")
     
+    # 啟動時先跑一次測試 (確認功能正常)
+    # Zeabur 每次部署都會觸發一次通知！
+    logging.info("執行啟動測試：嘗試抓取一次 AI 專案...")
+    daily_job()
+    
     # 設定排程
     schedule.every().day.at(schedule_time).do(daily_job)
     
