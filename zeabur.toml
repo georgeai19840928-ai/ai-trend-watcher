@@ -1,0 +1,14 @@
+[service]
+# 告訴 Zeabur 這個服務的名稱
+name = "ai-trend-watcher"
+
+# 告訴 Zeabur 這是 Worker 類型，不需要對外 exposing port
+# (注意：Zeabur 免費版/某些方案可能不支援 Worker mode，但設定 command 是一定要的)
+type = "worker"
+
+# 啟動指令
+command = "python main.py"
+
+[build]
+# 指定 Python 版本 (選填，通常自動偵測)
+# python_version = "3.10"
