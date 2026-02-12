@@ -6,3 +6,4 @@ google-generativeai
 python-dotenv
 python-telegram-bot
 pytz
+aiohttp  # 為了相容性加入，但我主要用 requests
