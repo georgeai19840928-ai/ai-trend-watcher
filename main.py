@@ -68,14 +68,22 @@ def send_startup_message():
         import requests
         bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        
+        logging.info(f"正在嘗試發送啟動訊息... Chat ID: {chat_id}")
+        
         if bot_token and chat_id:
             text = "🤖 *AI Trend Watcher 服務已啟動*\n\n正在連線並準備執行首播測試..."
-            requests.post(
+            response = requests.post(
                 f"https://api.telegram.org/bot{bot_token}/sendMessage",
-                json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
+                json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"},
+                timeout=10
             )
-    except Exception:
-        logging.error("無法發送啟動通知")
+            response.raise_for_status()
+            logging.info("啟動訊息發送成功。")
+        else:
+            logging.warning(f"缺少環境變數: TELEGRAM_BOT_TOKEN={bool(bot_token)}, TELEGRAM_CHAT_ID={bool(chat_id)}")
+    except Exception as e:
+        logging.error(f"無法發送啟動通知: {e}")
 
 def main():
     """主程式入口"""

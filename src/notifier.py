@@ -48,16 +48,19 @@ def send_telegram_summary(summaries):
     }
     
     try:
-        response = requests.post(url, json=payload, timeout=10)
-        response.raise_for_status()
+        response = requests.post(url, json=payload, timeout=15)
         
+        if response.status_code != 200:
+            logger.error(f"Telegram API 回傳錯誤: {response.status_code} - {response.text}")
+            return False
+            
         if response.json().get("ok"):
             logger.info("Telegram 訊息發送成功！")
             return True
         else:
-            logger.error(f"Telegram API 回傳錯誤: {response.text}")
+            logger.error(f"Telegram API 回傳 ok=False: {response.text}")
             return False
             
     except requests.exceptions.RequestException as e:
-        logger.error(f"Telegram 發送失敗: {e}")
+        logger.error(f"Telegram 發送失敗 (網路錯誤): {e}")
         return False
