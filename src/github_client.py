@@ -25,8 +25,8 @@ def search_trending_repos(limit=10):
     date_str = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
     
     # 使用關鍵字搜尋以涵蓋更多專案 (不只限制在 topic)
-    # 搜尋 AI, LLM, Video Workflow 相關關鍵字
-    query = f"AI LLM video workflow created:>{date_str}"
+    # 支援 OR 邏輯與括號分組
+    query = f"(AI OR LLM OR \"video workflow\" OR ComfyUI) created:>{date_str}"
     
     params = {
         "q": query,
@@ -54,7 +54,7 @@ def search_trending_repos(limit=10):
         # 如果還是 0 個，嘗試不限建立時間 (僅限最近更新)
         if not repos:
             logger.info("7 天內無新專案，擴大搜尋範圍至最近更新的專案...")
-            query = f"AI LLM video workflow pushed:>{date_str}"
+            query = f"(AI OR LLM OR \"video workflow\" OR ComfyUI) pushed:>{date_str}"
             params["q"] = query
             response = requests.get("https://api.github.com/search/repositories", headers=headers, params=params, timeout=15)
             data = response.json()
