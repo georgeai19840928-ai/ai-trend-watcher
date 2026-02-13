@@ -60,13 +60,31 @@ def daily_job():
         logging.error(error_msg)
         send_alert(error_msg)
 
+def send_startup_message():
+    """
+    發送啟動宣告，確認連線正常
+    """
+    try:
+        import requests
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+        chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        if bot_token and chat_id:
+            text = "🤖 *AI Trend Watcher 服務已啟動*\n\n正在連線並準備執行首播測試..."
+            requests.post(
+                f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
+            )
+    except Exception:
+        logging.error("無法發送啟動通知")
+
 def main():
     """主程式入口"""
     try:
-        # 讀取排程時間 (預設 05:00)
-        schedule_time = os.getenv("SCHEDULE_TIME", "21:00") # UTC 21:00 = 台灣 05:00
+        # 讀取排程時間 (預設 21:00 UTC)
+        schedule_time = os.getenv("SCHEDULE_TIME", "21:00")
         
         logging.info("程式啟動中...")
+        send_startup_message()
         
         # 啟動時先跑一次測試 (確認功能正常)
         logging.info("執行啟動測試：嘗試抓取一次 AI 專案...")
