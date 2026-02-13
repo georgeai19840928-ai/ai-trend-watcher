@@ -7,9 +7,13 @@ import time
 import os
 import logging
 import traceback
+from dotenv import load_dotenv
 from src.github_client import search_trending_repos
 from src.ai_summarizer import summarize_repos
 from src.notifier import send_telegram_summary
+
+# 載入環境變數 (支援 .env 檔案)
+load_dotenv()
 
 # 設定 Log
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
