@@ -47,17 +47,16 @@ def daily_job():
         # 2. 搜尋 ClawHub 熱門專案
         clawhub_items = fetch_clawhub_trending(limit=5)
         
-        all_items = trending_repos + clawhub_items
-
-        if not all_items:
+        if not trending_repos and not clawhub_items:
             logging.info("今日無特別熱門專案符合條件。")
             return
 
-        # 3. AI 生成摘要
-        summaries = summarize_repos(all_items)
+        # 3. AI 生成摘要 (分別處理以保持來源區分)
+        github_summaries = summarize_repos(trending_repos) if trending_repos else []
+        clawhub_summaries = summarize_repos(clawhub_items) if clawhub_items else []
         
-        # 3. 發送 Telegram 通知
-        success = send_telegram_summary(summaries)
+        # 4. 發送 Telegram 通知
+        success = send_telegram_summary(github_summaries, clawhub_summaries)
         
         if success:
             logging.info("每日 AI 趨勢報告發送成功！")
