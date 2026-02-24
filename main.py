@@ -9,6 +9,7 @@ import logging
 import traceback
 from dotenv import load_dotenv
 from src.github_client import search_trending_repos
+from src.clawhub_client import fetch_clawhub_trending
 from src.ai_summarizer import summarize_repos
 from src.notifier import send_telegram_summary
 
@@ -41,14 +42,19 @@ def daily_job():
     
     try:
         # 1. 搜尋熱門 GitHub 專案
-        trending_repos = search_trending_repos(limit=10)
+        trending_repos = search_trending_repos(limit=5)
         
-        if not trending_repos:
+        # 2. 搜尋 ClawHub 熱門專案
+        clawhub_items = fetch_clawhub_trending(limit=5)
+        
+        all_items = trending_repos + clawhub_items
+
+        if not all_items:
             logging.info("今日無特別熱門專案符合條件。")
             return
 
-        # 2. AI 生成摘要
-        summaries = summarize_repos(trending_repos)
+        # 3. AI 生成摘要
+        summaries = summarize_repos(all_items)
         
         # 3. 發送 Telegram 通知
         success = send_telegram_summary(summaries)
