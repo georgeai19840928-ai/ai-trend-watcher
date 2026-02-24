@@ -18,7 +18,7 @@ def send_telegram_summary(summaries):
         return False
 
     # 組裝訊息
-    message_lines = ["🚀 *每日 AI 趨勢報告* 🚀", ""]
+    message_lines = ["🚀 <b>每日 AI 趨勢報告</b> 🚀", ""]
     
     for item in summaries:
         name = item.get("name", "Unknown Repo")
@@ -27,11 +27,11 @@ def send_telegram_summary(summaries):
         summary = item.get("summary", "無摘要")
         
         # 格式化
-        line = f"🔹 [{name}]({url}) - {summary}"
+        line = f"🔹 <a href='{url}'>{name}</a> - {summary}"
         message_lines.append(line)
         message_lines.append("")
 
-    message_lines.append(f"_Generating: {len(summaries)} items_")
+    message_lines.append(f"<i>Generating: {len(summaries)} items</i>")
     
     final_message = "\n".join(message_lines)
     
@@ -44,7 +44,7 @@ def send_telegram_summary(summaries):
     payload = {
         "chat_id": chat_id,
         "text": final_message,
-        "parse_mode": "Markdown"
+        "parse_mode": "HTML"
     }
     
     try:

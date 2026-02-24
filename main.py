@@ -27,10 +27,10 @@ def send_alert(error_msg):
         bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
         if bot_token and chat_id:
-            text = f"🚨 *AI Trend Watcher 系統警報* 🚨\n\n程式發生嚴重錯誤，請檢查：\n`{error_msg}`"
+            text = f"🚨 <b>AI Trend Watcher 系統警報</b> 🚨\n\n程式發生嚴重錯誤，請檢查：\n<code>{error_msg}</code>"
             requests.post(
                 f"https://api.telegram.org/bot{bot_token}/sendMessage",
-                json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
+                json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
             )
     except Exception:
         logging.error("無法發送錯誤通知 (可能網路或 Token 有問題)")
@@ -76,10 +76,10 @@ def send_startup_message():
         logging.info(f"正在嘗試發送啟動訊息... Chat ID: {chat_id}")
         
         if bot_token and chat_id:
-            text = "🤖 *AI Trend Watcher 服務已啟動*\n\n正在連線並準備執行首播測試..."
+            text = "🤖 <b>AI Trend Watcher 服務已啟動</b>\n\n正在連線並準備執行首播測試..."
             response = requests.post(
                 f"https://api.telegram.org/bot{bot_token}/sendMessage",
-                json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"},
+                json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"},
                 timeout=10
             )
             response.raise_for_status()
