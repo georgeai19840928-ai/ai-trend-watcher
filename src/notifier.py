@@ -18,20 +18,19 @@ def send_telegram_summary(summaries):
         return False
 
     # 組裝訊息
-    message_lines = ["🚀 <b>每日 AI 趨勢報告</b> 🚀", ""]
-    
-    for item in summaries:
-        name = item.get("name", "Unknown Repo")
-        url = item.get("url", "#")
-        stars = item.get("stars", 0)
-        summary = item.get("summary", "無摘要")
-        
-        # 格式化
-        line = f"🔹 <a href='{url}'>{name}</a> - {summary}"
-        message_lines.append(line)
-        message_lines.append("")
-
-    message_lines.append(f"<i>Generating: {len(summaries)} items</i>")
+    if not summaries:
+        final_message = "🤖 <b>每日 AI 趨勢報告</b>\n\n今日無符合條件的新熱門專案。"
+    else:
+        message_lines = ["🚀 <b>每日 AI 趨勢報告</b> 🚀", ""]
+        for item in summaries:
+            name = item.get("name", "Unknown Repo")
+            url = item.get("url", "#")
+            summary = item.get("summary", "無摘要")
+            line = f"🔹 <a href='{url}'>{name}</a> - {summary}"
+            message_lines.append(line)
+            message_lines.append("")
+        message_lines.append(f"<i>Generating: {len(summaries)} items</i>")
+        final_message = "\n".join(message_lines)
     
     final_message = "\n".join(message_lines)
     

@@ -96,11 +96,16 @@ def main():
         schedule_time = os.getenv("SCHEDULE_TIME", "21:00")
         
         logging.info("程式啟動中...")
+        print(f"DEBUG: Starting main with schedule_time={schedule_time}")
         send_startup_message()
         
         # 啟動時先跑一次測試 (確認功能正常)
         logging.info("執行啟動測試：嘗試抓取一次 AI 專案...")
-        daily_job()
+        try:
+            daily_job()
+        except Exception as e:
+            logging.error(f"啟動測試失敗: {e}")
+            send_alert(f"啟動測試失敗: {e}")
         
         # 設定排程
         schedule.every().day.at(schedule_time).do(daily_job)
@@ -108,9 +113,13 @@ def main():
         logging.info(f"AI Trend Watcher 已啟動，設定每日於 {schedule_time} (UTC) 執行任務。")
         
         # 啟動排程迴圈
+        count = 0
         while True:
             schedule.run_pending()
             time.sleep(60)
+            count += 1
+            if count % 60 == 0: # 每小時 log 一次存活狀態
+                logging.info("服務存活監控中...")
             
     except Exception as e:
         error_msg = f"主程式崩潰 (Main Loop Crash): {str(e)}\n{traceback.format_exc()}"
